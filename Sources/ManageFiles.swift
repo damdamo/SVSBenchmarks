@@ -70,3 +70,26 @@ func getFolderNames() -> [String] {
   }
   return result
 }
+
+
+func writeInFile(csvData: [[String]], csvFilePath: String) {
+  if let csvString = csvData.map({ $0.joined(separator: ",") }).joined(separator: "\n").data(using: .utf8) {
+      if FileManager.default.fileExists(atPath: csvFilePath) {
+          if let fileHandle = FileHandle(forWritingAtPath: csvFilePath) {
+              fileHandle.seekToEndOfFile()
+              fileHandle.write(csvString)
+              fileHandle.closeFile()
+              print("Data appended to CSV file successfully.")
+          } else {
+              print("Error opening the CSV file for appending.")
+          }
+      } else {
+          do {
+              try csvString.write(to: URL(fileURLWithPath: csvFilePath), options: .atomic)
+              print("CSV file created and data written successfully.")
+          } catch {
+              print("Error creating or writing to the CSV file: \(error)")
+          }
+      }
+  }
+}
